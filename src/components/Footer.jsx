@@ -1,94 +1,85 @@
 import { Link } from 'react-router-dom'
+import { MapPin, Phone, Mail } from 'lucide-react'
 
-const quickLinks = [
-  { to: '/', label: 'Accueil' },
-  { to: '/services', label: 'Services' },
-  { to: '/realisations', label: 'Réalisations' },
-  { to: '/a-propos', label: 'À propos' },
-  { to: '/contact', label: 'Contact' },
+const NAV = [
+  { to: '/',            label: 'Accueil' },
+  { to: '/services',    label: 'Services' },
+  { to: '/realisations',label: 'Réalisations' },
+  { to: '/a-propos',    label: 'À propos' },
+  { to: '/contact',     label: 'Contact' },
 ]
 
-const services = [
-  'Entretien de jardins',
-  'Création paysagère',
-  'Taille de haies',
-  "Élagage d'arbres",
-  'Tonte de pelouses',
-  'Terrassement',
-  'Pose de clôtures',
-  'Engazonnement',
-]
+const SERVICES = ['Entretien de jardins','Création paysagère','Taille de haies',"Élagage d'arbres",'Tonte de pelouses','Terrassement','Pose de clôtures','Engazonnement']
 
 export default function Footer() {
   const year = new Date().getFullYear()
 
   return (
-    <footer className="bg-vert-950 text-white" aria-label="Pied de page">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-12">
+    <footer style={{ background: 'var(--bark)' }}>
+      <div className="container pt-16 pb-10">
+        {/* Top rule */}
+        <div className="flex items-center gap-4 mb-14">
+          <div className="flex-1 h-px" style={{ background: 'rgba(130,173,108,0.18)' }} />
+          <svg width="20" height="20" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+            <path d="M32 4C32 4 12 18 12 36C12 47 20 56 32 56C44 56 52 47 52 36C52 18 32 4 32 4Z" fill="#4E8A35" opacity="0.7"/>
+          </svg>
+          <div className="flex-1 h-px" style={{ background: 'rgba(130,173,108,0.18)' }} />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 mb-14">
 
           {/* Brand */}
-          <div>
-            <div className="font-heading font-bold text-2xl mb-1">
-              MAZEAS <span className="text-vert-400">Paysages</span>
+          <div className="md:col-span-4">
+            <div style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', color: '#F2EDE2', fontSize: '1.9rem', fontWeight: 600, lineHeight: 1, marginBottom: '0.25rem' }}>
+              MAZEAS
+              <span style={{ color: '#82AD6C', fontStyle: 'italic', marginLeft: '0.4rem' }}>Paysages</span>
             </div>
-            <p className="text-vert-400 text-sm mb-6 leading-relaxed">
-              Votre paysagiste de confiance en Loire-Atlantique et Vendée depuis plusieurs années.
+            <p className="text-sm mt-4 mb-6 leading-relaxed" style={{ color: '#82AD6C' }}>
+              Paysagiste professionnel basé à Saint-Philbert-de-Grand-Lieu, au service des jardins de Loire-Atlantique et Vendée.
             </p>
-            <address className="not-italic flex flex-col gap-3 text-sm text-vert-300">
+            <address className="not-italic flex flex-col gap-3 text-sm" style={{ color: '#B8D4A4' }}>
               <span className="flex items-start gap-2.5">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0" aria-hidden="true">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
-                </svg>
-                Saint-Philbert-de-Grand-Lieu, 44310 Loire-Atlantique
+                <MapPin size={14} className="mt-0.5 shrink-0" style={{ color: '#4E8A35' }} />
+                Saint-Philbert-de-Grand-Lieu, 44310
               </span>
-              <a href="tel:+33633463769" className="flex items-center gap-2.5 hover:text-vert-400 transition-colors">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.09 6.09l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
-                </svg>
+              <a href="tel:+33633463769" className="flex items-center gap-2.5 link-draw" style={{ color: '#B8D4A4' }}>
+                <Phone size={14} style={{ color: '#4E8A35' }} />
                 06 33 46 37 69
               </a>
-              <a href="mailto:mazeaspaysage@orange.fr" className="flex items-center gap-2.5 hover:text-vert-400 transition-colors">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" />
-                </svg>
+              <a href="mailto:mazeaspaysage@orange.fr" className="flex items-center gap-2.5 link-draw" style={{ color: '#B8D4A4' }}>
+                <Mail size={14} style={{ color: '#4E8A35' }} />
                 mazeaspaysage@orange.fr
               </a>
             </address>
           </div>
 
-          {/* Navigation */}
-          <div>
-            <h3 className="font-heading font-semibold text-base mb-5 text-white">Navigation</h3>
-            <ul className="flex flex-col gap-2.5 text-sm text-vert-300">
-              {quickLinks.map(link => (
-                <li key={link.to}>
-                  <Link to={link.to} className="hover:text-vert-400 transition-colors flex items-center gap-1.5">
-                    <span className="text-vert-600">›</span>
-                    {link.label}
-                  </Link>
+          {/* Nav */}
+          <div className="md:col-span-3 md:col-start-6">
+            <h3 className="text-xs uppercase tracking-widest mb-5 font-sans font-medium" style={{ color: '#4E8A35' }}>Navigation</h3>
+            <ul className="flex flex-col gap-2.5">
+              {NAV.map(n => (
+                <li key={n.to}>
+                  <Link to={n.to} className="text-sm link-draw" style={{ color: '#B8D4A4' }}>{n.label}</Link>
                 </li>
               ))}
             </ul>
           </div>
 
           {/* Services */}
-          <div>
-            <h3 className="font-heading font-semibold text-base mb-5 text-white">Nos services</h3>
-            <ul className="flex flex-col gap-2.5 text-sm text-vert-300">
-              {services.map(s => (
-                <li key={s} className="flex items-start gap-1.5">
-                  <span className="text-vert-600 mt-px">›</span>
-                  {s}
-                </li>
+          <div className="md:col-span-4">
+            <h3 className="text-xs uppercase tracking-widest mb-5 font-sans font-medium" style={{ color: '#4E8A35' }}>Prestations</h3>
+            <ul className="grid grid-cols-2 gap-x-4 gap-y-2">
+              {SERVICES.map(s => (
+                <li key={s} className="text-sm" style={{ color: '#82AD6C' }}>{s}</li>
               ))}
             </ul>
           </div>
         </div>
 
-        <div className="border-t border-vert-900 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-vert-500">
-          <p>© {year} MAZEAS Paysages. Tous droits réservés.</p>
-          <p>Paysagiste à Saint-Philbert-de-Grand-Lieu — Loire-Atlantique (44)</p>
+        {/* Bottom */}
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-3 pt-8" style={{ borderTop: '1px solid rgba(130,173,108,0.12)' }}>
+          <p className="text-xs font-sans" style={{ color: 'rgba(130,173,108,0.5)' }}>© {year} MAZEAS Paysages. Tous droits réservés.</p>
+          <p className="text-xs font-sans" style={{ color: 'rgba(130,173,108,0.5)' }}>Paysagiste en Loire-Atlantique (44) — Saint-Philbert-de-Grand-Lieu</p>
         </div>
       </div>
     </footer>

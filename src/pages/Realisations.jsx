@@ -1,199 +1,145 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
+import { motion, AnimatePresence } from 'motion/react'
+import { ArrowRight, MapPin } from 'lucide-react'
 
-const categories = ['Tous', 'Création', 'Entretien', 'Élagage', 'Terrassement', 'Clôtures']
+const CATS = ['Tout', 'Création', 'Entretien', 'Élagage', 'Terrassement', 'Clôtures']
 
 const projets = [
-  {
-    id: 1,
-    titre: 'Jardin contemporain — Vertou',
-    categorie: 'Création',
-    localite: 'Vertou (44)',
-    desc: 'Création d\'un jardin contemporain avec terrasse en bois composite, massifs structurés et gazon.',
-    color: 'from-vert-800 to-vert-600',
-  },
-  {
-    id: 2,
-    titre: 'Entretien annuel — Nantes Sud',
-    categorie: 'Entretien',
-    localite: 'Nantes (44)',
-    desc: 'Contrat d\'entretien annuel : tonte hebdomadaire, taille saisonnière des haies et massifs.',
-    color: 'from-vert-700 to-vert-500',
-  },
-  {
-    id: 3,
-    titre: 'Élagage de chênes — Bouaye',
-    categorie: 'Élagage',
-    localite: 'Bouaye (44)',
-    desc: 'Élagage de plusieurs chênes centenaires, sécurisation et démontage en sections.',
-    color: 'from-vert-900 to-vert-700',
-  },
-  {
-    id: 4,
-    titre: 'Terrassement et allées — Machecoul',
-    categorie: 'Terrassement',
-    localite: 'Machecoul-Saint-Même (44)',
-    desc: 'Terrassement complet, création d\'allées en graviers stabilisés et bordures béton.',
-    color: 'from-vert-600 to-vert-400',
-  },
-  {
-    id: 5,
-    titre: 'Clôture panneau rigide — Saint-Philbert',
-    categorie: 'Clôtures',
-    localite: 'Saint-Philbert-de-Grand-Lieu (44)',
-    desc: 'Pose de 80 ml de clôture en panneau rigide avec portail double battant.',
-    color: 'from-vert-800 to-vert-500',
-  },
-  {
-    id: 6,
-    titre: 'Jardin naturel — Clisson',
-    categorie: 'Création',
-    localite: 'Clisson (44)',
-    desc: 'Transformation en jardin naturel : prairie fleurie, haie bocagère et bassin de rétention.',
-    color: 'from-vert-700 to-vert-400',
-  },
-  {
-    id: 7,
-    titre: 'Entretien résidence — Rezé',
-    categorie: 'Entretien',
-    localite: 'Rezé (44)',
-    desc: 'Entretien des espaces verts d\'une résidence : tonte, soufflage, taille de 120 ml de haies.',
-    color: 'from-vert-600 to-vert-300',
-  },
-  {
-    id: 8,
-    titre: 'Abattage et dessouchage — Legé',
-    categorie: 'Élagage',
-    localite: 'Legé (44)',
-    desc: 'Abattage de pins parasols en limite de propriété, dessouchage et remise en état du terrain.',
-    color: 'from-vert-900 to-vert-600',
-  },
-  {
-    id: 9,
-    titre: 'Aménagement paysager — Aigrefeuille',
-    categorie: 'Création',
-    localite: 'Aigrefeuille-sur-Maine (44)',
-    desc: 'Aménagement complet d\'un jardin neuf : gazon en rouleau, massifs, clôture et éclairage.',
-    color: 'from-vert-700 to-vert-300',
-  },
+  { id: 1, cat: 'Création',     titre: 'Jardin contemporain',              lieu: 'Vertou (44)',              desc: 'Création avec terrasse composite, massifs structurés et gazon en rouleau.', hue: '130,58,24', l: '22%' },
+  { id: 2, cat: 'Entretien',    titre: 'Entretien annuel résidence',       lieu: 'Nantes Sud (44)',          desc: 'Contrat annuel : tonte hebdomadaire, taille des haies et massifs.', hue: '120,50,28', l: '30%' },
+  { id: 3, cat: 'Élagage',      titre: 'Élagage de chênes centenaires',   lieu: 'Bouaye (44)',              desc: 'Sécurisation et démontage en sections de plusieurs chênes.', hue: '130,30,14', l: '18%' },
+  { id: 4, cat: 'Terrassement', titre: 'Allées en graviers stabilisés',   lieu: 'Machecoul (44)',           desc: 'Décaissement, création d\'allées et bordures béton sur 400 m².', hue: '130,52,32', l: '26%' },
+  { id: 5, cat: 'Clôtures',     titre: 'Clôture panneaux rigides 80 ml', lieu: 'Saint-Philbert (44)',      desc: 'Fourniture et pose avec portail double battant motorisé.', hue: '120,40,20', l: '24%' },
+  { id: 6, cat: 'Création',     titre: 'Jardin naturel & prairie fleurie',lieu: 'Clisson (44)',             desc: 'Haie bocagère, prairie fleurie et bassin de rétention des eaux.', hue: '130,60,30', l: '28%' },
+  { id: 7, cat: 'Entretien',    titre: 'Espaces verts entreprise',        lieu: 'Rezé (44)',                desc: 'Tonte, soufflage et taille de 120 ml de haies persistantes.', hue: '120,46,26', l: '22%' },
+  { id: 8, cat: 'Élagage',      titre: 'Abattage pins & dessouchage',     lieu: 'Legé (44)',               desc: 'Abattage sécurisé, dessouchage et remise en état du terrain.', hue: '130,28,12', l: '16%' },
+  { id: 9, cat: 'Création',     titre: 'Aménagement jardin neuf',         lieu: 'Aigrefeuille (44)',        desc: 'Gazon rouleau, massifs arbustifs, clôture et éclairage extérieur.', hue: '130,56,28', l: '24%' },
 ]
 
-export default function Realisations() {
-  const [filtre, setFiltre] = useState('Tous')
+function ProjectCard({ p, i }) {
+  return (
+    <motion.article
+      layout
+      initial={{ opacity: 0, scale: 0.96 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.94 }}
+      transition={{ duration: 0.4, delay: i * 0.055 }}
+      className="group relative overflow-hidden rounded-2xl cursor-default"
+      style={{ border: '1px solid var(--parchment)' }}
+    >
+      {/* Placeholder image */}
+      <div
+        className="relative h-52 overflow-hidden"
+        style={{ background: `hsl(${p.hue}, ${p.l})` }}
+        aria-hidden="true"
+      >
+        {/* Botanical deco */}
+        <svg
+          className="absolute -bottom-4 -right-4 w-36 h-36 opacity-15"
+          viewBox="0 0 64 64" fill="none"
+        >
+          <path d="M32 4C32 4 10 20 10 38C10 50 20 58 32 58C44 58 54 50 54 38C54 20 32 4 32 4Z" fill="#82AD6C"/>
+          <path d="M32 58L32 26" stroke="#1B3A18" strokeWidth="2.5" strokeLinecap="round"/>
+          <path d="M32 40L20 28M32 40L44 28" stroke="#1B3A18" strokeWidth="2.5" strokeLinecap="round"/>
+        </svg>
 
-  const filtres = filtre === 'Tous' ? projets : projets.filter(p => p.categorie === filtre)
+        {/* Hover overlay */}
+        <div className="absolute inset-0 flex items-end p-5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: 'linear-gradient(to top, rgba(17,16,8,0.85) 0%, transparent 60%)' }}>
+          <p className="text-sm text-white/90 leading-snug translate-y-4 group-hover:translate-y-0 transition-transform duration-300">{p.desc}</p>
+        </div>
+
+        {/* Category badge */}
+        <span
+          className="absolute top-3 left-3 text-xs font-sans font-medium px-3 py-1 rounded-full"
+          style={{ background: 'rgba(17,16,8,0.6)', color: '#B8D4A4', backdropFilter: 'blur(8px)' }}
+        >
+          {p.cat}
+        </span>
+      </div>
+
+      <div className="p-5" style={{ background: 'white' }}>
+        <h2 style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontSize: '1.2rem', fontWeight: 600, color: 'var(--ink)', lineHeight: 1.2, marginBottom: '0.4rem' }}>
+          {p.titre}
+        </h2>
+        <span className="flex items-center gap-1.5 text-xs font-sans" style={{ color: 'var(--fern)' }}>
+          <MapPin size={11} />
+          {p.lieu}
+        </span>
+      </div>
+    </motion.article>
+  )
+}
+
+export default function Realisations() {
+  const [cat, setCat] = useState('Tout')
+  const filtered = cat === 'Tout' ? projets : projets.filter(p => p.cat === cat)
 
   return (
     <>
       <Helmet>
         <title>Nos Réalisations | MAZEAS Paysages — Paysagiste Loire-Atlantique</title>
-        <meta name="description" content="Découvrez les réalisations de MAZEAS Paysages : jardins créés, entretiens, élagages et terrassements en Loire-Atlantique et Vendée. Photos et descriptions de nos chantiers." />
+        <meta name="description" content="Découvrez les réalisations de MAZEAS Paysages : jardins créés, entretiens, élagages et terrassements en Loire-Atlantique et Vendée." />
       </Helmet>
 
-      {/* Page Header */}
-      <div className="bg-vert-900 pt-32 pb-16">
-        <div className="container text-center">
-          <span className="section-tag text-vert-400">Nos travaux</span>
-          <h1 className="font-heading font-extrabold text-white text-4xl md:text-5xl mt-1 mb-4">
-            Nos réalisations
-          </h1>
-          <p className="text-vert-300 text-lg max-w-2xl mx-auto">
-            Découvrez quelques-unes de nos interventions en Loire-Atlantique et Vendée.
-            Chaque projet est unique, réalisé avec soin et professionnalisme.
-          </p>
+      {/* Header */}
+      <div className="grain" style={{ background: 'var(--ink)', paddingTop: 'calc(var(--header-h) + 4rem)', paddingBottom: '4rem' }}>
+        <div className="container">
+          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+            <span className="section-tag" style={{ color: '#82AD6C' }}>Nos travaux</span>
+            <h1 style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontSize: 'clamp(3rem, 7vw, 6rem)', fontWeight: 600, color: '#F2EDE2', lineHeight: 1.0, letterSpacing: '-0.025em', marginTop: '0.25rem' }}>
+              Réalisations
+            </h1>
+            <p className="mt-4 max-w-xl text-base" style={{ color: '#82AD6C' }}>
+              Quelques-unes de nos interventions en Loire-Atlantique. Chaque projet, unique.
+            </p>
+          </motion.div>
         </div>
       </div>
 
-      {/* Filtres */}
-      <section className="section bg-gray-50" aria-label="Portfolio des réalisations">
+      {/* Gallery */}
+      <section className="section" style={{ background: 'var(--cream)' }}>
         <div className="container">
-          <div className="flex flex-wrap gap-2 justify-center mb-12" role="group" aria-label="Filtrer par catégorie">
-            {categories.map(cat => (
+          {/* Filters */}
+          <div className="flex flex-wrap gap-2 mb-12" role="group" aria-label="Filtrer par catégorie">
+            {CATS.map(c => (
               <button
-                key={cat}
-                onClick={() => setFiltre(cat)}
-                className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${
-                  filtre === cat
-                    ? 'bg-vert-700 text-white shadow-md'
-                    : 'bg-white text-vert-700 border border-vert-200 hover:border-vert-400 hover:bg-vert-50'
-                }`}
-                aria-pressed={filtre === cat}
+                key={c}
+                onClick={() => setCat(c)}
+                aria-pressed={cat === c}
+                className="px-5 py-2 rounded-full text-sm font-sans font-medium transition-all duration-200"
+                style={cat === c
+                  ? { background: 'var(--ink)', color: 'var(--cream)' }
+                  : { background: 'white', color: 'var(--ink)', border: '1px solid var(--parchment)' }
+                }
               >
-                {cat}
+                {c}
               </button>
             ))}
           </div>
 
           {/* Grid */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtres.map(p => (
-              <article
-                key={p.id}
-                className="card overflow-hidden group"
-              >
-                {/* Placeholder image — à remplacer par une vraie photo */}
-                <div className={`h-52 bg-gradient-to-br ${p.color} flex items-center justify-center relative overflow-hidden`} aria-hidden="true">
-                  <div className="absolute inset-0 opacity-20">
-                    {[...Array(8)].map((_, i) => (
-                      <div
-                        key={i}
-                        className="absolute rounded-full bg-white"
-                        style={{
-                          width: `${20 + i * 15}px`,
-                          height: `${20 + i * 15}px`,
-                          top: `${Math.sin(i) * 40 + 30}%`,
-                          left: `${(i * 13) % 90}%`,
-                        }}
-                      />
-                    ))}
-                  </div>
-                  <div className="relative text-center text-white/60 text-xs font-medium px-4">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="mx-auto mb-2 opacity-50">
-                      <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" />
-                    </svg>
-                    Photo à venir
-                  </div>
-                  <span className="absolute top-3 right-3 bg-white/20 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1 rounded-full">
-                    {p.categorie}
-                  </span>
-                </div>
+          <motion.div layout className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <AnimatePresence mode="popLayout">
+              {filtered.map((p, i) => <ProjectCard key={p.id} p={p} i={i} />)}
+            </AnimatePresence>
+          </motion.div>
 
-                <div className="p-6">
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <h2 className="font-heading font-bold text-vert-900 text-base leading-snug">
-                      {p.titre}
-                    </h2>
-                  </div>
-                  <p className="text-xs text-vert-600 font-semibold flex items-center gap-1 mb-3">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
-                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
-                    </svg>
-                    {p.localite}
-                  </p>
-                  <p className="text-sm text-gray-500 leading-relaxed">{p.desc}</p>
-                </div>
-              </article>
-            ))}
-          </div>
-
-          <p className="text-center text-gray-400 text-sm mt-10">
-            D'autres réalisations à venir. Contactez-nous pour voir plus de photos de nos chantiers.
+          <p className="text-center text-sm mt-10 font-sans" style={{ color: '#999' }}>
+            D'autres réalisations à venir. Contactez-nous pour voir plus de photos.
           </p>
         </div>
       </section>
 
       {/* CTA */}
-      <section className="section bg-vert-800" aria-label="Votre projet">
-        <div className="container text-center">
-          <h2 className="font-heading font-bold text-white text-3xl mb-4">
-            Votre projet sera notre prochaine réalisation
+      <section className="grain" style={{ background: 'var(--bark)', padding: 'clamp(4rem, 7vw, 6rem) 0' }}>
+        <div className="container">
+          <h2 style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 600, color: '#F2EDE2', lineHeight: 1.1, marginBottom: '1.5rem' }}>
+            Votre projet sera<br />notre prochaine réalisation.
           </h2>
-          <p className="text-vert-200 mb-8 max-w-xl mx-auto">
-            Contactez-nous pour discuter de votre projet et obtenir un devis gratuit.
-          </p>
-          <Link to="/contact" className="btn-primary">
-            Demander un devis gratuit
+          <Link to="/contact" className="btn-fern">
+            Demander un devis gratuit <ArrowRight size={15} />
           </Link>
         </div>
       </section>

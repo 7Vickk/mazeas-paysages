@@ -2,52 +2,175 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  html {
-    scroll-behavior: smooth;
-  }
+/* ─── Design System — Terreau & Lumière ─────────────────────────────────── */
+:root {
+  --ink:        #111008;
+  --bark:       #1E1509;
+  --moss:       #1B3A18;
+  --leaf:       #2E5A1E;
+  --fern:       #4E8A35;
+  --sage:       #82AD6C;
+  --pale:       #B8D4A4;
+  --cream:      #F2EDE2;
+  --parchment:  #E6DFD0;
+  --gold:       #B8943F;
+  --mist:       #E4EFE0;
 
-  body {
-    font-family: 'Open Sans', sans-serif;
-    color: #2d2d2d;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Montserrat', sans-serif;
-  }
+  --header-h: 72px;
 }
 
+/* ─── Base ───────────────────────────────────────────────────────────────── */
+@layer base {
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4 { font-family: 'Cormorant Garamond', Georgia, serif; }
+}
+
+/* ─── Grain texture ──────────────────────────────────────────────────────── */
+.grain {
+  position: relative;
+}
+.grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.055;
+  pointer-events: none;
+  animation: grain-shift 7s steps(9) infinite;
+  z-index: 1;
+}
+
+@keyframes grain-shift {
+  0%   { background-position:  0%   0%; }
+  11%  { background-position: -5%  -10%; }
+  22%  { background-position: -15%   5%; }
+  33%  { background-position:  7%  -25%; }
+  44%  { background-position: 20%   25%; }
+  55%  { background-position:-25%   10%; }
+  66%  { background-position: 15%    5%; }
+  77%  { background-position:  0%   15%; }
+  88%  { background-position: 25%   35%; }
+}
+
+/* ─── Rotating badge ─────────────────────────────────────────────────────── */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.badge-spin { animation: spin-slow 14s linear infinite; }
+
+/* ─── Fade-up stagger (CSS-only fallback) ────────────────────────────────── */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Underline draw ─────────────────────────────────────────────────────── */
+.link-draw {
+  position: relative;
+  text-decoration: none;
+}
+.link-draw::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: currentColor;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.link-draw:hover::after { width: 100%; }
+
+/* ─── Shared components ──────────────────────────────────────────────────── */
 @layer components {
-  .btn-primary {
-    @apply inline-flex items-center gap-2 bg-vert-600 hover:bg-vert-700 active:bg-vert-800 text-white font-semibold py-3 px-7 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg;
-  }
-
-  .btn-secondary {
-    @apply inline-flex items-center gap-2 border-2 border-white text-white hover:bg-white hover:text-vert-800 font-semibold py-3 px-7 rounded-lg transition-all duration-200;
-  }
-
-  .btn-outline {
-    @apply inline-flex items-center gap-2 border-2 border-vert-700 text-vert-700 hover:bg-vert-700 hover:text-white font-semibold py-3 px-7 rounded-lg transition-all duration-200;
+  .container {
+    @apply max-w-7xl mx-auto px-5 sm:px-8 lg:px-12;
   }
 
   .section {
-    @apply py-16 md:py-24;
-  }
-
-  .container {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    @apply py-20 md:py-28;
   }
 
   .section-tag {
-    @apply inline-block text-vert-600 font-semibold text-sm uppercase tracking-widest mb-3;
+    display: inline-block;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--fern);
+    margin-bottom: 1rem;
   }
 
   .section-title {
-    @apply text-3xl md:text-4xl font-bold text-vert-900 leading-tight;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(2.4rem, 5vw, 3.8rem);
+    font-weight: 600;
+    line-height: 1.1;
+    color: var(--ink);
   }
 
-  .card {
-    @apply bg-white rounded-2xl shadow-sm hover:shadow-md border border-gray-100 transition-shadow duration-200;
+  /* CTA variants */
+  .btn-fern {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 2rem;
+    background: var(--fern);
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    font-size: 0.875rem;
+    border-radius: 0.75rem;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .btn-fern:hover {
+    background: var(--leaf);
+    transform: translateY(-1px);
+  }
+
+  .btn-ghost-dark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 2rem;
+    border: 1px solid rgba(242, 237, 226, 0.25);
+    color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    font-size: 0.875rem;
+    border-radius: 0.75rem;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .btn-ghost-dark:hover {
+    background: rgba(242, 237, 226, 0.08);
+    border-color: rgba(242, 237, 226, 0.5);
+  }
+
+  .btn-ghost-light {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 2rem;
+    border: 1px solid var(--parchment);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    font-size: 0.875rem;
+    border-radius: 0.75rem;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .btn-ghost-light:hover {
+    background: var(--parchment);
   }
 }

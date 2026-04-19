@@ -1,101 +1,108 @@
+import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
+import { motion, useInView } from 'motion/react'
+import { ArrowRight, Phone, MapPin, Scissors, Shovel, TreePine, Fence } from 'lucide-react'
+
+/* ─── Animated counter ────────────────────────────────────────────────────── */
+import { useState, useEffect } from 'react'
+function useCounter(target, active, duration = 1800) {
+  const [v, setV] = useState(0)
+  useEffect(() => {
+    if (!active) return
+    let raf
+    const start = performance.now()
+    const tick = now => {
+      const t = Math.min((now - start) / duration, 1)
+      const ease = 1 - Math.pow(1 - t, 3)
+      setV(Math.floor(ease * target))
+      if (t < 1) raf = requestAnimationFrame(tick)
+      else setV(target)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [active, target, duration])
+  return v
+}
+
+function Stat({ value, suffix, label }) {
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, margin: '-80px' })
+  const count = useCounter(value, inView)
+  return (
+    <div ref={ref} className="flex flex-col items-center text-center px-6 py-8">
+      <div style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontSize: 'clamp(3.5rem, 8vw, 5.5rem)', fontWeight: 600, color: '#F2EDE2', lineHeight: 1, letterSpacing: '-0.02em' }}>
+        {count}{suffix}
+      </div>
+      <div className="mt-2 text-xs font-sans uppercase tracking-widest" style={{ color: '#82AD6C' }}>{label}</div>
+    </div>
+  )
+}
+
+/* ─── Service card ──────────────────────────────────────────────────────────── */
+function ServiceCard({ num, icon: Icon, title, desc, delay }) {
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, margin: '-60px' })
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 32 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.6, delay, ease: [0.4, 0, 0.2, 1] }}
+      className="group relative overflow-hidden rounded-2xl p-8 cursor-default"
+      style={{ background: 'var(--cream)', border: '1px solid var(--parchment)' }}
+    >
+      {/* Hover fill */}
+      <div
+        className="absolute inset-0 -translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out"
+        style={{ background: 'var(--moss)' }}
+      />
+      <div className="relative z-10">
+        <div className="flex items-start justify-between mb-6">
+          <span
+            className="text-xs font-sans font-medium tracking-widest uppercase"
+            style={{ color: 'var(--sage)' }}
+          >
+            0{num}
+          </span>
+          <Icon
+            size={22}
+            className="transition-colors duration-300"
+            style={{ color: 'var(--fern)' }}
+          />
+        </div>
+        <h3
+          className="mb-3 transition-colors duration-300"
+          style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontSize: '1.5rem', fontWeight: 600, color: 'var(--ink)', lineHeight: 1.15 }}
+        >
+          {title}
+        </h3>
+        <p
+          className="text-sm leading-relaxed transition-colors duration-300 group-hover:text-[#B8D4A4]"
+          style={{ color: '#555' }}
+        >
+          {desc}
+        </p>
+        <div className="mt-6 flex items-center gap-2 text-xs font-sans font-medium transition-all duration-300" style={{ color: 'var(--fern)' }}>
+          En savoir plus
+          <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform duration-300" />
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
+/* ─── Zones list ─────────────────────────────────────────────────────────────── */
+const zones = ['Saint-Philbert-de-Grand-Lieu','Nantes','Vertou','Rezé','Bouaye','La Chevrolière','Machecoul-Saint-Même','Aigrefeuille-sur-Maine','Clisson','Saint-Colomban','Geneston','Legé']
 
 const services = [
-  {
-    icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="M12 2a10 10 0 0 1 10 10c0 5.52-4.48 10-10 10S2 17.52 2 12" />
-        <path d="M2 12C2 6.48 6.48 2 12 2" />
-        <path d="M12 6v6l4 2" />
-        <path d="M7 17l-2 2" /><path d="M17 7l2-2" />
-      </svg>
-    ),
-    title: 'Entretien de jardins',
-    desc: 'Tonte, désherbage, taille et soins réguliers pour maintenir votre jardin en parfait état toute l\'année.',
-    href: '/services#entretien',
-  },
-  {
-    icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="M12 22V12" /><path d="M5 12H2a10 10 0 0 0 20 0h-3" />
-        <path d="M8 5.2A6 6 0 0 1 18 8c0 2.7-1.1 5.2-3 7" />
-        <path d="M6 8a6 6 0 0 0 8.7 8.5" />
-      </svg>
-    ),
-    title: 'Création paysagère',
-    desc: 'Conception et réalisation de jardins sur mesure, espaces verts, massifs, rocailles et plantations.',
-    href: '/services#creation',
-  },
-  {
-    icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="M3 3l18 18" /><path d="M7 7c0 0 3-3 8-3" /><path d="M17 17c0 0-3 3-8 3" />
-        <path d="M3 12c0-2.5 1-4.5 2.5-6" /><path d="M21 12c0 2.5-1 4.5-2.5 6" />
-      </svg>
-    ),
-    title: 'Taille & Élagage',
-    desc: 'Taille de haies, arbustes et élagage d\'arbres réalisés avec soin pour la santé et l\'esthétique de vos végétaux.',
-    href: '/services#taille',
-  },
-  {
-    icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-      </svg>
-    ),
-    title: 'Terrassement & Clôtures',
-    desc: 'Terrassement, nivellement, pose de clôtures, portails et création d\'allées pour aménager votre extérieur.',
-    href: '/services#terrassement',
-  },
+  { icon: TreePine, title: 'Entretien de jardins', desc: 'Tonte, désherbage, taille saisonnière et soins réguliers pour maintenir votre jardin en parfait état tout au long de l\'année.' },
+  { icon: Shovel,   title: 'Création paysagère', desc: 'Conception et réalisation de jardins sur mesure, massifs, rocailles et plantations adaptées à votre terrain et votre style de vie.' },
+  { icon: Scissors, title: 'Taille & Élagage', desc: 'Taille de haies et arbustes, élagage d\'arbres réalisés aux bonnes périodes pour la santé durable de vos végétaux.' },
+  { icon: Fence,    title: 'Terrassement & Clôtures', desc: 'Terrassement, nivellement du terrain, pose de clôtures et portails pour aménager et sécuriser votre extérieur.' },
 ]
 
-const zones = [
-  'Saint-Philbert-de-Grand-Lieu',
-  'Nantes',
-  'Vertou',
-  'Rezé',
-  'Bouaye',
-  'La Chevrolière',
-  'Machecoul-Saint-Même',
-  'Aigrefeuille-sur-Maine',
-  'Clisson',
-  'Saint-Colomban',
-  'Geneston',
-  'Legé',
-]
-
-const atouts = [
-  {
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <polyline points="20 6 9 17 4 12" />
-      </svg>
-    ),
-    title: 'Devis gratuit & sans engagement',
-    desc: 'Nous vous proposons un devis détaillé et personnalisé gratuitement, adapté à votre projet et à votre budget.',
-  },
-  {
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
-      </svg>
-    ),
-    title: 'Intervention rapide',
-    desc: 'Nous intervenons rapidement sur toute la Loire-Atlantique et le nord Vendée, dans des délais adaptés à vos besoins.',
-  },
-  {
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-      </svg>
-    ),
-    title: 'Qualité & professionnalisme',
-    desc: 'Notre équipe qualifiée utilise un matériel professionnel et applique les meilleures pratiques pour des résultats durables.',
-  },
-]
-
+/* ─── Page ─────────────────────────────────────────────────────────────────── */
 export default function Home() {
   return (
     <>
@@ -104,214 +111,224 @@ export default function Home() {
         <meta name="description" content="Paysagiste professionnel à Saint-Philbert-de-Grand-Lieu. Entretien et création de jardins, taille de haies, élagage, terrassement. Intervention Nantes, Loire-Atlantique et Vendée. Devis gratuit : 06 33 46 37 69." />
       </Helmet>
 
-      {/* Hero */}
+      {/* ── HERO ───────────────────────────────────────────────────────────── */}
       <section
-        className="relative flex items-center justify-center min-h-screen bg-hero-gradient overflow-hidden pt-20"
-        aria-label="Bienvenue chez MAZEAS Paysages"
+        className="grain relative flex items-end min-h-screen overflow-hidden"
+        style={{ background: 'var(--ink)', paddingBottom: 'clamp(3rem, 8vw, 6rem)' }}
+        aria-label="MAZEAS Paysages — Paysagiste Loire-Atlantique"
       >
-        {/* Decorative leaves */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none select-none" aria-hidden="true">
-          <svg className="absolute -top-16 -right-16 w-96 h-96 opacity-10" viewBox="0 0 200 200" fill="#52b788">
-            <path d="M100 10C100 10 30 50 30 110C30 150 62 180 100 180C138 180 170 150 170 110C170 50 100 10 100 10Z" />
+        {/* Gradient orb */}
+        <div
+          aria-hidden="true"
+          className="absolute pointer-events-none"
+          style={{
+            top: '20%', right: '8%',
+            width: 'clamp(300px, 45vw, 640px)',
+            height: 'clamp(300px, 45vw, 640px)',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(46,90,30,0.28) 0%, transparent 68%)',
+          }}
+        />
+        <div
+          aria-hidden="true"
+          className="absolute pointer-events-none"
+          style={{
+            bottom: '-10%', left: '-8%',
+            width: '500px', height: '500px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(27,58,24,0.35) 0%, transparent 70%)',
+          }}
+        />
+
+        {/* Rotating badge */}
+        <div
+          aria-hidden="true"
+          className="absolute bottom-12 right-8 md:bottom-16 md:right-16 w-28 h-28 z-20"
+        >
+          <svg viewBox="0 0 120 120" className="badge-spin w-full h-full">
+            <path id="circ" d="M 60,60 m -48,0 a 48,48 0 1,1 96,0 a 48,48 0 1,1 -96,0" fill="none"/>
+            <text fontSize="11" fontFamily="DM Sans, sans-serif" fontWeight="500" letterSpacing="3" fill="#82AD6C">
+              <textPath href="#circ">DEVIS GRATUIT · SANS ENGAGEMENT · </textPath>
+            </text>
           </svg>
-          <svg className="absolute -bottom-20 -left-20 w-80 h-80 opacity-10" viewBox="0 0 200 200" fill="#74c69d">
-            <path d="M100 10C100 10 30 50 30 110C30 150 62 180 100 180C138 180 170 150 170 110C170 50 100 10 100 10Z" />
-          </svg>
-          {[...Array(6)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute rounded-full bg-vert-600 opacity-5"
-              style={{
-                width: `${80 + i * 40}px`,
-                height: `${80 + i * 40}px`,
-                top: `${10 + i * 14}%`,
-                left: `${-5 + i * 18}%`,
-              }}
-            />
-          ))}
+          <div className="absolute inset-0 flex items-center justify-center" style={{ color: '#82AD6C' }}>
+            <ArrowRight size={20} />
+          </div>
         </div>
 
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <span className="inline-block bg-vert-700/60 text-vert-300 text-xs font-semibold uppercase tracking-widest px-4 py-1.5 rounded-full mb-6">
-            Paysagiste — Loire-Atlantique
-          </span>
-          <h1 className="font-heading font-extrabold text-white text-4xl sm:text-5xl md:text-6xl leading-tight mb-6">
-            Votre jardin,<br />
-            <span className="text-vert-400">notre passion</span>
+        {/* Main content */}
+        <div className="relative z-10 container w-full">
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-xs font-sans font-medium uppercase tracking-[0.3em] mb-8 flex items-center gap-3"
+            style={{ color: '#82AD6C' }}
+          >
+            <MapPin size={13} />
+            Paysagiste · Saint-Philbert-de-Grand-Lieu
+          </motion.p>
+
+          <h1 aria-label="Jardin vivant.">
+            <motion.span
+              initial={{ opacity: 0, y: 48 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.75, delay: 0.2, ease: [0.4, 0, 0.2, 1] }}
+              className="block"
+              style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontSize: 'clamp(4.5rem, 13vw, 12rem)', fontWeight: 600, color: '#F2EDE2', lineHeight: 0.9, letterSpacing: '-0.025em' }}
+            >
+              Jardin
+            </motion.span>
+            <motion.span
+              initial={{ opacity: 0, y: 48 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.75, delay: 0.35, ease: [0.4, 0, 0.2, 1] }}
+              className="block italic"
+              style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontSize: 'clamp(4.5rem, 13vw, 12rem)', fontWeight: 500, color: '#4E8A35', lineHeight: 0.9, letterSpacing: '-0.025em' }}
+            >
+              vivant.
+            </motion.span>
           </h1>
-          <p className="text-vert-200 text-lg md:text-xl mb-10 max-w-2xl mx-auto leading-relaxed">
-            Paysagiste professionnel basé à <strong className="text-white">Saint-Philbert-de-Grand-Lieu</strong>,
-            MAZEAS Paysages réalise l'entretien, la création et l'aménagement de vos espaces verts
-            en Loire-Atlantique et Vendée.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/contact" className="btn-primary text-base">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.09 6.09l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
-              </svg>
-              Demander un devis gratuit
-            </Link>
-            <Link to="/services" className="btn-secondary text-base">
-              Découvrir nos services
-            </Link>
-          </div>
 
-          {/* Quick contact bar */}
-          <div className="mt-14 flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-vert-300">
-            <a href="tel:+33633463769" className="flex items-center gap-2 hover:text-vert-200 transition-colors">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.09 6.09l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
-              </svg>
-              06 33 46 37 69
-            </a>
-            <span className="hidden sm:block text-vert-700">|</span>
-            <span className="flex items-center gap-2">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
-              </svg>
-              Loire-Atlantique & Vendée
-            </span>
-            <span className="hidden sm:block text-vert-700">|</span>
-            <span className="flex items-center gap-2">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-              Devis gratuit
-            </span>
-          </div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.55 }}
+            className="mt-10 md:mt-12 flex flex-col md:flex-row md:items-end gap-10 md:gap-20"
+          >
+            <p className="max-w-sm text-base leading-relaxed" style={{ color: '#82AD6C' }}>
+              Entretien et création d'espaces verts en Loire-Atlantique et Vendée. Devis gratuit, intervention rapide.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Link to="/contact" className="btn-fern">
+                Demander un devis
+                <ArrowRight size={15} />
+              </Link>
+              <a href="tel:+33633463769" className="btn-ghost-dark">
+                <Phone size={15} />
+                06 33 46 37 69
+              </a>
+            </div>
+          </motion.div>
         </div>
 
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce" aria-hidden="true">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#74c69d" strokeWidth="2" strokeLinecap="round">
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </div>
+        {/* Scroll cue */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.1 }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+          aria-hidden="true"
+        >
+          <div className="w-px h-10 animate-pulse" style={{ background: 'linear-gradient(to bottom, transparent, #82AD6C)' }} />
+        </motion.div>
       </section>
 
-      {/* Services overview */}
-      <section className="section bg-white" aria-labelledby="services-heading">
+      {/* ── SERVICES ────────────────────────────────────────────────────────── */}
+      <section className="section" style={{ background: 'var(--cream)' }} aria-labelledby="services-h2">
         <div className="container">
-          <div className="text-center mb-14">
-            <span className="section-tag">Ce que nous faisons</span>
-            <h2 id="services-heading" className="section-title mb-4">
-              Nos services de paysagisme
-            </h2>
-            <p className="text-gray-500 text-lg max-w-2xl mx-auto">
-              De l'entretien courant à la création complète, nous prenons soin de vos espaces extérieurs
-              avec expertise et passion.
-            </p>
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-14">
+            <div>
+              <span className="section-tag">Ce que nous faisons</span>
+              <h2 id="services-h2" className="section-title mt-1">
+                Nos services<br />de paysagisme
+              </h2>
+            </div>
+            <Link to="/services" className="btn-ghost-light self-start md:self-auto whitespace-nowrap">
+              Voir tout
+              <ArrowRight size={15} />
+            </Link>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {services.map(s => (
-              <Link
-                key={s.title}
-                to={s.href}
-                className="card p-8 group flex flex-col items-start gap-4"
-              >
-                <div className="p-3 bg-vert-50 rounded-xl text-vert-700 group-hover:bg-vert-100 transition-colors">
-                  {s.icon}
-                </div>
-                <h3 className="font-heading font-bold text-vert-900 text-lg">{s.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed flex-grow">{s.desc}</p>
-                <span className="text-vert-600 text-sm font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">
-                  En savoir plus
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
-                    <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
-                  </svg>
-                </span>
-              </Link>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {services.map((s, i) => (
+              <ServiceCard key={s.title} num={i + 1} icon={s.icon} title={s.title} desc={s.desc} delay={i * 0.08} />
             ))}
           </div>
-          <div className="text-center mt-10">
-            <Link to="/services" className="btn-outline">
-              Voir tous nos services
-            </Link>
+        </div>
+      </section>
+
+      {/* ── STATS ────────────────────────────────────────────────────────────── */}
+      <section
+        className="grain overflow-hidden"
+        style={{ background: 'var(--moss)', padding: 'clamp(3rem, 6vw, 5rem) 0' }}
+        aria-label="Chiffres clés"
+      >
+        <div className="container">
+          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0" style={{ divideColor: 'rgba(130,173,108,0.2)' }}>
+            <Stat value={10}  suffix="+" label="années d'expérience" />
+            <Stat value={500} suffix="+" label="chantiers réalisés"  />
+            <Stat value={40}  suffix="km" label="rayon d'intervention" />
+            <Stat value={100} suffix="%" label="devis gratuit"       />
           </div>
         </div>
       </section>
 
-      {/* Zone d'intervention */}
-      <section className="section bg-vert-50" aria-labelledby="zone-heading">
+      {/* ── ZONE ─────────────────────────────────────────────────────────────── */}
+      <section className="section" style={{ background: 'var(--parchment)' }} aria-labelledby="zone-h2">
         <div className="container">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
               <span className="section-tag">Zone de couverture</span>
-              <h2 id="zone-heading" className="section-title mb-4">
-                Nous intervenons près de chez vous
+              <h2 id="zone-h2" className="section-title mt-1 mb-6">
+                Nous intervenons<br />près de chez vous
               </h2>
-              <p className="text-gray-500 mb-8 leading-relaxed">
-                Basés à <strong className="text-vert-800">Saint-Philbert-de-Grand-Lieu</strong>,
+              <p className="text-base leading-relaxed mb-8" style={{ color: '#4a4a3a' }}>
+                Basés à <strong style={{ color: 'var(--moss)' }}>Saint-Philbert-de-Grand-Lieu</strong>,
                 nous couvrons l'ensemble de la Loire-Atlantique et le nord de la Vendée.
-                Contactez-nous pour vérifier notre disponibilité dans votre secteur.
+                Contactez-nous pour vérifier notre disponibilité.
               </p>
-              <Link to="/contact" className="btn-primary">
-                Demander un devis
+              <Link to="/contact" className="btn-fern">
+                Vérifier ma zone
+                <ArrowRight size={15} />
               </Link>
             </div>
-            <div>
-              <ul className="grid grid-cols-2 gap-3" role="list" aria-label="Communes desservies">
-                {zones.map(ville => (
-                  <li
-                    key={ville}
-                    className="flex items-center gap-2.5 bg-white rounded-xl px-4 py-3 text-sm font-medium text-vert-800 shadow-sm border border-vert-100"
-                  >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="text-vert-500 shrink-0" aria-hidden="true">
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                    {ville}
-                  </li>
-                ))}
-              </ul>
-              <p className="text-xs text-gray-400 mt-4 text-center">Et communes environnantes…</p>
-            </div>
+            <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-2.5" role="list" aria-label="Communes couvertes">
+              {zones.map((z, i) => (
+                <motion.li
+                  key={z}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true, margin: '-40px' }}
+                  transition={{ delay: i * 0.04 }}
+                  className="text-sm font-sans px-4 py-3 rounded-xl flex items-center gap-2"
+                  style={{ background: 'white', color: 'var(--moss)', border: '1px solid rgba(78,138,53,0.15)' }}
+                >
+                  <span style={{ color: 'var(--fern)', flexShrink: 0 }}>›</span>
+                  {z}
+                </motion.li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>
 
-      {/* Pourquoi nous */}
-      <section className="section bg-white" aria-labelledby="atouts-heading">
+      {/* ── CTA BANNER ────────────────────────────────────────────────────────── */}
+      <section
+        className="grain overflow-hidden"
+        style={{ background: 'var(--ink)', padding: 'clamp(4rem, 8vw, 7rem) 0' }}
+        aria-labelledby="cta-h2"
+      >
         <div className="container">
-          <div className="text-center mb-14">
-            <span className="section-tag">Nos engagements</span>
-            <h2 id="atouts-heading" className="section-title">
-              Pourquoi choisir MAZEAS Paysages ?
+          <div className="max-w-3xl">
+            <span className="section-tag" style={{ color: '#82AD6C' }}>Commençons ensemble</span>
+            <h2
+              id="cta-h2"
+              className="mt-2 mb-8"
+              style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontSize: 'clamp(2.8rem, 7vw, 5.5rem)', fontWeight: 600, color: '#F2EDE2', lineHeight: 1.05, letterSpacing: '-0.02em' }}
+            >
+              Votre jardin mérite le meilleur.
             </h2>
-          </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            {atouts.map(a => (
-              <div key={a.title} className="flex flex-col items-center text-center p-8">
-                <div className="w-16 h-16 rounded-full bg-vert-100 flex items-center justify-center text-vert-700 mb-5">
-                  {a.icon}
-                </div>
-                <h3 className="font-heading font-bold text-vert-900 text-lg mb-3">{a.title}</h3>
-                <p className="text-gray-500 leading-relaxed">{a.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Banner */}
-      <section className="bg-vert-800 py-16" aria-labelledby="cta-heading">
-        <div className="container text-center">
-          <h2 id="cta-heading" className="font-heading font-bold text-white text-3xl md:text-4xl mb-4">
-            Prêt à embellir votre jardin ?
-          </h2>
-          <p className="text-vert-200 text-lg mb-8 max-w-xl mx-auto">
-            Contactez-nous dès aujourd'hui pour un devis gratuit et sans engagement.
-            Nous vous répondons rapidement.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/contact" className="btn-primary">
-              Demander un devis gratuit
-            </Link>
-            <a href="tel:+33633463769" className="btn-secondary">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.09 6.09l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
-              </svg>
-              06 33 46 37 69
-            </a>
+            <div className="flex flex-wrap gap-3">
+              <Link to="/contact" className="btn-fern">
+                Demander un devis gratuit
+                <ArrowRight size={15} />
+              </Link>
+              <a href="tel:+33633463769" className="btn-ghost-dark">
+                <Phone size={15} />
+                06 33 46 37 69
+              </a>
+            </div>
           </div>
         </div>
       </section>
