@@ -45,3 +45,62 @@ Use the `vert-*` color scale and existing component classes before adding new Ta
 Each page sets its own `<title>`, `<meta>` description, and Open Graph tags via `<Helmet>` from `react-helmet-async`. The canonical domain is `https://mazeas-paysages.fr`.
 
 Inline SVGs use `aria-hidden="true"` when decorative. Interactive elements use `aria-label`. Semantic HTML (`header`, `nav`, `main`, `footer`, `section`, `article`, `address`) is used throughout.
+
+---
+
+## Design System — Standards Non Négociables
+
+### Posture créative
+
+Avant chaque tâche UI, se poser ces questions :
+- Quel est le **TONE** de cette interface ? (brutal-minimal, luxe, éditorial, organique…)
+- Quel est l'élément **INOUBLIABLE** ? Ce que l'utilisateur va retenir dans 1 semaine ?
+- Qu'est-ce que 99% des développeurs n'oseraient **PAS** faire ici ?
+
+### Stack de référence
+
+- React + Tailwind (classes utilitaires core uniquement)
+- `motion/react` pour les animations React (`import { motion } from "motion/react"`)
+- CSS-only animations pour le HTML pur (keyframes, transitions, custom properties)
+- `lucide-react` pour les icônes (`import { X } from "lucide-react"`)
+- Recharts / D3 pour les dataviz si nécessaire
+
+### Typographie
+
+- **Jamais** : Inter, Roboto, Arial, system-ui en choix par défaut
+- **Toujours** : une font display forte + une font de corps raffinée, chargées via `@import` Google Fonts
+- Hiérarchie typographique agressive : contraste de taille, de poids, d'espacement
+
+### Couleurs
+
+- CSS variables pour toute la palette (`--color-primary`, `--color-accent`, etc.)
+- Palette dominante avec 1-2 accents tranchants — pas de palettes timides équilibrées
+- Alterner entre thèmes clairs et sombres selon le contexte
+
+### Motion & Micro-interactions
+
+- Page load : staggered reveals orchestrés (animation-delay progressif)
+- Hover states surprenants, pas prévisibles
+- Un effet d'entrée bien exécuté > 10 micro-interactions dispersées
+- CSS : keyframes nommés, custom properties animées, clip-path transitions
+
+### Composition spatiale
+
+- Asymétrie intentionnelle, grilles brisées, overlaps contrôlés
+- Espace négatif généreux OU densité contrôlée — jamais le "juste milieu mou"
+- Éléments qui sortent du flux pour créer du rythme
+
+### Backgrounds & Atmosphère
+
+- **Jamais** de fond uni blanc/gris par défaut
+- Gradient meshes, noise textures (SVG filter ou CSS), geometric patterns, layered transparencies
+- Depth : shadows dramatiques, borders décoratives, effets de profondeur
+
+### Règles de code UI
+
+- Composants React : default export, props avec valeurs par défaut
+- **Jamais** `localStorage`/`sessionStorage`
+- **Jamais** de balise `<form>` — utiliser `onClick`/`onChange`
+- Scripts externes uniquement depuis `cdnjs.cloudflare.com`
+- Gestion des états de chargement et d'erreur toujours présente dans les `fetch`
+- États complets obligatoires : hover, focus, active, disabled, loading, empty, error
