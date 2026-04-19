@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: 'Open Sans', sans-serif;
+    color: #2d2d2d;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Montserrat', sans-serif;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center gap-2 bg-vert-600 hover:bg-vert-700 active:bg-vert-800 text-white font-semibold py-3 px-7 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 border-2 border-white text-white hover:bg-white hover:text-vert-800 font-semibold py-3 px-7 rounded-lg transition-all duration-200;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center gap-2 border-2 border-vert-700 text-vert-700 hover:bg-vert-700 hover:text-white font-semibold py-3 px-7 rounded-lg transition-all duration-200;
+  }
+
+  .section {
+    @apply py-16 md:py-24;
+  }
+
+  .container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-tag {
+    @apply inline-block text-vert-600 font-semibold text-sm uppercase tracking-widest mb-3;
+  }
+
+  .section-title {
+    @apply text-3xl md:text-4xl font-bold text-vert-900 leading-tight;
+  }
+
+  .card {
+    @apply bg-white rounded-2xl shadow-sm hover:shadow-md border border-gray-100 transition-shadow duration-200;
+  }
+}

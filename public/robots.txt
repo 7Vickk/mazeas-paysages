@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mazeas-paysages.fr/sitemap.xml
