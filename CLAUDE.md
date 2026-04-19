@@ -1,50 +1,50 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Ce fichier fournit des instructions à Claude Code (claude.ai/code) pour travailler dans ce dépôt.
 
-## Project Overview
+## Présentation du projet
 
-MAZEAS Paysages is a client-side-only SPA (no backend) for a French landscaping business. All content is hardcoded in component files — there is no CMS, database, or API.
+MAZEAS Paysages est une SPA client-side uniquement (sans backend) pour une entreprise de paysagisme française. Tout le contenu est codé en dur dans les fichiers de composants — pas de CMS, pas de base de données, pas d'API.
 
-## Commands
+## Commandes
 
 ```bash
-npm install       # Install dependencies
-npm run dev       # Start Vite dev server (localhost:5173, hot reload)
-npm run build     # Production build → dist/
-npm run preview   # Serve production build locally
+npm install       # Installer les dépendances
+npm run dev       # Lancer le serveur de développement Vite (localhost:5173, hot reload)
+npm run build     # Build de production → dist/
+npm run preview   # Prévisualiser le build de production en local
 ```
 
-There are no tests, linting scripts, or type checking configured.
+Aucun test, script de lint ou vérification de types n'est configuré.
 
 ## Architecture
 
-**Stack**: React 18 + Vite 5 + Tailwind CSS 3 + React Router 6 + React Helmet Async
+**Stack** : React 18 + Vite 5 + Tailwind CSS 3 + React Router 6 + React Helmet Async
 
-**Structure**:
-- `src/pages/` — one file per route (`Home`, `Services`, `Realisations`, `APropos`, `Contact`)
-- `src/components/` — shared layout components (`Header`, `Footer`)
-- `src/App.jsx` — router definition (all routes live here)
-- `index.html` — contains JSON-LD LocalBusiness structured data and Google Fonts preload links; SEO meta is also managed per-page via React Helmet in each page component
+**Structure** :
+- `src/pages/` — un fichier par route (`Home`, `Services`, `Realisations`, `APropos`, `Contact`)
+- `src/components/` — composants de mise en page partagés (`Header`, `Footer`)
+- `src/App.jsx` — définition du routeur (toutes les routes sont ici)
+- `index.html` — contient les données structurées JSON-LD LocalBusiness et les liens de préchargement Google Fonts ; les meta SEO sont également gérées par page via React Helmet dans chaque composant de page
 
-**Content model**: All business data (services, portfolio items, stats, values) is defined as JS arrays directly inside each page component. There is no shared data layer.
+**Modèle de contenu** : Toutes les données métier (services, réalisations, stats, valeurs) sont définies sous forme de tableaux JS directement dans chaque composant de page. Il n'y a pas de couche de données partagée.
 
-**Form handling**: The contact form in `Contact.jsx` uses client-side state and validation; submission opens a `mailto:` link — there is no form backend.
+**Gestion du formulaire** : Le formulaire de contact dans `Contact.jsx` utilise l'état React côté client et une validation locale ; la soumission ouvre un lien `mailto:` — pas de backend de formulaire.
 
-## Styling Conventions
+## Conventions de style
 
-Tailwind is extended in `tailwind.config.js` with:
-- A custom green palette accessed via `vert-{50…950}` (e.g., `bg-vert-500`, `text-vert-900`)
-- Custom component classes defined in `src/index.css`: `.btn-primary`, `.btn-secondary`, `.btn-outline`, `.section`, `.container`, `.card`, `.section-tag`
-- Fonts: Montserrat for headings, Open Sans for body (loaded via `index.html`)
+Tailwind est étendu dans `tailwind.config.js` avec :
+- Une palette verte personnalisée accessible via `vert-{50…950}` (ex. `bg-vert-500`, `text-vert-900`)
+- Des classes de composants personnalisées définies dans `src/index.css` : `.btn-primary`, `.btn-secondary`, `.btn-outline`, `.section`, `.container`, `.card`, `.section-tag`
+- Polices : Montserrat pour les titres, Open Sans pour le corps (chargées via `index.html`)
 
-Use the `vert-*` color scale and existing component classes before adding new Tailwind utilities.
+Utiliser la palette `vert-*` et les classes de composants existantes avant d'ajouter de nouvelles utilitaires Tailwind.
 
-## SEO & Accessibility
+## SEO & Accessibilité
 
-Each page sets its own `<title>`, `<meta>` description, and Open Graph tags via `<Helmet>` from `react-helmet-async`. The canonical domain is `https://mazeas-paysages.fr`.
+Chaque page définit son propre `<title>`, sa description `<meta>` et ses balises Open Graph via `<Helmet>` de `react-helmet-async`. Le domaine canonique est `https://mazeas-paysages.fr`.
 
-Inline SVGs use `aria-hidden="true"` when decorative. Interactive elements use `aria-label`. Semantic HTML (`header`, `nav`, `main`, `footer`, `section`, `article`, `address`) is used throughout.
+Les SVGs inline utilisent `aria-hidden="true"` quand ils sont décoratifs. Les éléments interactifs utilisent `aria-label`. Le HTML sémantique (`header`, `nav`, `main`, `footer`, `section`, `article`, `address`) est utilisé partout.
 
 ---
 
