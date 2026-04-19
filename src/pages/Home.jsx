@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
-import { useInView } from '../hooks/useInView'
+import Reveal from '../components/Reveal'
 
 /* ─── Data ─── */
 
@@ -113,19 +113,6 @@ function GrainOverlay({ className = 'opacity-20' }) {
       className={`absolute inset-0 grain-bg pointer-events-none mix-blend-overlay ${className}`}
       aria-hidden="true"
     />
-  )
-}
-
-function Reveal({ children, delay = 0, className = '' }) {
-  const [ref, inView] = useInView()
-  return (
-    <div
-      ref={ref}
-      className={`reveal ${inView ? 'visible' : ''} ${className}`}
-      style={delay ? { transitionDelay: `${delay}ms` } : undefined}
-    >
-      {children}
-    </div>
   )
 }
 
