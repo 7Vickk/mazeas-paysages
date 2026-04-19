@@ -2,52 +2,130 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-forest:    #0f2417;
+  --color-forest-dk: #080f09;
+  --color-sage:      #52b788;
+  --color-cream:     #f5efe6;
+  --color-gold:      #c9953a;
+  --color-charcoal:  #1c1c1a;
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
   }
 
   body {
-    font-family: 'Open Sans', sans-serif;
-    color: #2d2d2d;
+    font-family: 'DM Sans', system-ui, sans-serif;
+    color: var(--color-charcoal);
+    background-color: var(--color-cream);
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cormorant Garamond', Georgia, serif;
   }
 }
 
 @layer components {
-  .btn-primary {
-    @apply inline-flex items-center gap-2 bg-vert-600 hover:bg-vert-700 active:bg-vert-800 text-white font-semibold py-3 px-7 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg;
-  }
 
-  .btn-secondary {
-    @apply inline-flex items-center gap-2 border-2 border-white text-white hover:bg-white hover:text-vert-800 font-semibold py-3 px-7 rounded-lg transition-all duration-200;
-  }
-
-  .btn-outline {
-    @apply inline-flex items-center gap-2 border-2 border-vert-700 text-vert-700 hover:bg-vert-700 hover:text-white font-semibold py-3 px-7 rounded-lg transition-all duration-200;
-  }
-
-  .section {
-    @apply py-16 md:py-24;
-  }
-
+  /* ─── Layout ─── */
   .container {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    @apply max-w-7xl mx-auto px-6 lg:px-12;
   }
 
-  .section-tag {
-    @apply inline-block text-vert-600 font-semibold text-sm uppercase tracking-widest mb-3;
+  /* ─── Eyebrow tag ─── */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'DM Sans', system-ui, sans-serif;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-gold);
+  }
+  .tag::before {
+    content: '';
+    display: block;
+    width: 22px;
+    height: 1px;
+    background: var(--color-gold);
+    flex-shrink: 0;
   }
 
-  .section-title {
-    @apply text-3xl md:text-4xl font-bold text-vert-900 leading-tight;
+  /* ─── New buttons ─── */
+  .btn-gold {
+    @apply inline-flex items-center gap-2.5 bg-gold hover:bg-gold-light
+           text-forest-900 font-dm font-medium text-sm px-7 py-3.5
+           tracking-wide transition-colors duration-200;
   }
 
-  .card {
-    @apply bg-white rounded-2xl shadow-sm hover:shadow-md border border-gray-100 transition-shadow duration-200;
+  .btn-outline-cream {
+    @apply inline-flex items-center gap-2.5 border border-white/30 text-white
+           font-dm font-medium text-sm px-7 py-3.5 tracking-wide
+           hover:bg-white/10 hover:border-white/60 transition-all duration-200;
   }
+
+  .btn-outline-forest {
+    @apply inline-flex items-center gap-2.5 border border-forest-700 text-forest-900
+           font-dm font-medium text-sm px-7 py-3.5 tracking-wide
+           hover:bg-forest-900 hover:text-cream hover:border-forest-900
+           transition-all duration-300;
+  }
+
+  /* ─── Legacy buttons (other pages) ─── */
+  .btn-primary {
+    @apply inline-flex items-center gap-2 bg-vert-600 hover:bg-vert-700 active:bg-vert-800
+           text-white font-semibold py-3 px-7 rounded-lg transition-all duration-200
+           shadow-md hover:shadow-lg;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 border-2 border-white text-white
+           hover:bg-white hover:text-vert-800 font-semibold py-3 px-7 rounded-lg
+           transition-all duration-200;
+  }
+  .btn-outline {
+    @apply inline-flex items-center gap-2 border-2 border-vert-700 text-vert-700
+           hover:bg-vert-700 hover:text-white font-semibold py-3 px-7 rounded-lg
+           transition-all duration-200;
+  }
+
+  /* ─── Legacy layout ─── */
+  .section        { @apply py-16 md:py-24; }
+  .section-tag    { @apply inline-block text-vert-600 font-semibold text-sm uppercase tracking-widest mb-3; }
+  .section-title  { @apply text-3xl md:text-4xl font-bold text-vert-900 leading-tight; }
+  .card           { @apply bg-white rounded-2xl shadow-sm hover:shadow-md border border-gray-100 transition-shadow duration-200; }
+
+  /* ─── Grain texture ─── */
+  .grain-bg {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.15'/%3E%3C/svg%3E");
+  }
+
+  /* ─── Scroll reveal ─── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(36px);
+    transition:
+      opacity  0.75s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@layer utilities {
+  /* Hero stagger delays */
+  .anim-delay-100 { animation-delay: 100ms; }
+  .anim-delay-200 { animation-delay: 200ms; }
+  .anim-delay-300 { animation-delay: 300ms; }
+  .anim-delay-400 { animation-delay: 400ms; }
+  .anim-delay-500 { animation-delay: 500ms; }
+  .anim-delay-600 { animation-delay: 600ms; }
+  .anim-delay-700 { animation-delay: 700ms; }
 }
